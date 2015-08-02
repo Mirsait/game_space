@@ -3,7 +3,7 @@ var canvasContext;
 var canvasH;
 var canvasW;
 
-var PLAYER_W = 800;
+var PLAYER_W = 75;
 var PLAYER_H = 10;
 var playerX = 20;
 var playerSpeed;
