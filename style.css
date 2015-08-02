@@ -1,0 +1,17 @@
+body {
+	background-color: #ddd;
+}
+canvas{
+	border: 1px solid gray;
+	margin-left: 50px;
+}
+
+/*select product.maker as maker, product.type as type
+from product
+where maker in (
+select product.maker from product
+group by product.maker
+having count(product.model) > 1
+)
+group by maker, type
+having count(product.type) = 1*/
