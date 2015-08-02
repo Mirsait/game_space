@@ -19,7 +19,7 @@ var ballSpeedX = 10;
 var ballSpeedY = 10;
 var ballSpeedScore = 1;
 
-var WINNING_LEVEL = 1;
+var WINNING_LEVEL = 10;
 var showWinScreen = false;
 
 var array = new Array();
