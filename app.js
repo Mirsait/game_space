@@ -19,10 +19,15 @@ var ballSpeedX = 10;
 var ballSpeedY = 10;
 var ballSpeedScore = 1;
 
+var WINNING_LEVEL = 1;
+var showWinScreen = false;
+
 var array = new Array();
 var COUNT_BAR_DEFAULT = 10;
 var countBar = COUNT_BAR_DEFAULT;
 var barSpeed = 1;
+
+
 
 function draw() {
 	canvas  = document.getElementById('canvas');
@@ -33,12 +38,20 @@ function draw() {
 
 	createBar(countBar);
 
-
 	setInterval(function () {
 		drawAll();
 	}, 1000/FRAMEperSECOND);
 
 	canvas.addEventListener('mousemove', mouseMovePlayer);
+
+	canvas.addEventListener('mousedown', handMouseClick);
+}
+
+function handMouseClick (evt) {
+	if(showWinScreen){
+		defaultOptions();
+		showWinScreen=false;
+	}
 }
 
 function mouseMovePlayer (evt) {
@@ -51,13 +64,30 @@ function mouseMovePlayer (evt) {
 }
 
 function drawAll () {
-	drawRect(0, 0, canvasW, canvasH, 'skyBlue');	
+	drawRect(0, 0, canvasW, canvasH, 'skyBlue');
+	if (showWinScreen){
+		if (playerHealth === 0 ){
+			canvasContext.fillStyle = 'red';
+			canvasContext.font = '30px Arial';	
+			canvasContext.fillText('You lose!', 300, 100);
+		} else 
+			if (playerLevel === WINNING_LEVEL ) {
+				canvasContext.fillStyle = 'green';
+				canvasContext.font = '30px Arial';
+				canvasContext.fillText('You Win!', 300, 100);
+			}
+		canvasContext.fillStyle = 'gray';
+		canvasContext.font = '18px Arial';	
+		canvasContext.fillText('Click to continue...', 300, 450);
+		return;
+	}
 	drawPlayer();
 	drawBall();	
 	moveBall();
 	drawBar();
 	drawScore();
 	Arbiter();
+	
 }
 
 function drawRect (posX, posY, W, H, color) {
@@ -71,30 +101,33 @@ function drawBall() {
 	canvasContext.beginPath();
 	canvasContext.arc(ballX, ballY, BALL_RADIUS, 0, 2 * Math.PI, true);
 	canvasContext.fill();
+
 }
-function moveBall () {
+function moveBall () {	
 	ballX += ballSpeedX;
 	ballY += ballSpeedY;
 	//реакция на стены
-	if(ballX<BALL_RADIUS){
+	if(ballX < BALL_RADIUS){
 		ballSpeedX= -ballSpeedX;
-	};
-	if (ballX>canvasW - BALL_RADIUS){
+	} else
+	if (ballX > canvasW - BALL_RADIUS){
 		ballSpeedX= -ballSpeedX;
-	}	
-	if(ballY<BALL_RADIUS) {
+	} else
+	if(ballY < BALL_RADIUS) {
 		ballSpeedY= -ballSpeedY;
-	};
-	if (ballY>=canvasH){//провалился вниз
+	} else 
+	if (ballY >= canvasH){//провалился вниз
 		ballY = BALL_RADIUS;
-		playerHealth--;
-		
+		playerHealth--;		
 	}
 	
 	//реакция на планку
 	if (ballY>canvasH - (PLAYER_H + BALL_RADIUS) && ballX > playerX && ballX<playerX + PLAYER_W) {
-		ballSpeedY=-ballSpeedY;
+		ballSpeedY =- ballSpeedY;
+		var deltaX = ballX - (playerX + PLAYER_W/2);
+		ballSpeedX = deltaX * 0.35;
 	}
+
 }
 
 //------------------------------ PLAYER --------------------
@@ -185,13 +218,9 @@ function Arbiter() {
 		}
 		createBar(countBar);
 	}	
-	if (playerHealth === 0 ) {
-		WinOrDeath(true);			
-	}
-	if (playerLevel===11){
-		WinOrDeath(false)
-	}
-
+	if (playerHealth === 0 || playerLevel === WINNING_LEVEL ) {		
+		showWinScreen = true;		
+	}	
 }
 function defaultOptions() {
 	ballSpeedX = 10;
@@ -203,15 +232,5 @@ function defaultOptions() {
 	countBar = COUNT_BAR_DEFAULT;
 	barSpeed = 1;
 	createBar(countBar);
+	
 }
-
-function WinOrDeath (wod) {
-	if (wod) {
-
-		defaultOptions();
-	} else {
-
-	}
-}
-
-
