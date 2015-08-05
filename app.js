@@ -184,7 +184,7 @@ function Bar(barX, barY){
 		drawRect(this.barX, this.barY , this.W, this.H, acolor[rcolor]);
 	};
 	this.move=function () {
-		this.barY += this.speed * 0.5;
+		this.barY += this.speed * 0.1;
 		if (this.barY > canvasH){
 			playerHealth=0;	//showWinScreen = true;		
 		}
