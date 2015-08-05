@@ -19,15 +19,26 @@ var ballSpeedX = 10;
 var ballSpeedY = 10;
 var ballSpeedScore = 1;
 
-var WINNING_LEVEL = 1;
+var WINNING_LEVEL = 10;
 var showWinScreen = false;
+var showMenu = true;
 
 var array = new Array();
 var COUNT_BAR_DEFAULT = 10;
 var countBar = COUNT_BAR_DEFAULT;
 var barSpeed = 1;
 
-
+function menu() {
+	drawRect(0, 0, canvasW, canvasH, 'lightgreen');
+	if (showMenu){
+		canvasContext.strokeStyle = 'orange'
+		canvasContext.fillStyle = 'white';
+		canvasContext.fillRect(365,300, 165,33);		
+		canvasContext.font = '30px Arial';		
+		canvasContext.strokeText('Start Game', 370, 327);			
+		return;
+	}	
+}
 
 function draw() {
 	canvas  = document.getElementById('canvas');
@@ -43,17 +54,31 @@ function draw() {
 	}, 1000/FRAMEperSECOND);
 
 	canvas.addEventListener('mousemove', mouseMovePlayer);
-
-	canvas.addEventListener('mousedown', handMouseClick);
+	canvas.addEventListener('mousedown', handMouseClick);	
 }
 
+var mX = 0;
+var mY = 0;
 function handMouseClick (evt) {
+	if (showMenu){
+		var rect = canvas.getBoundingClientRect();
+		var root = document.documentElement;
+		var mouseX = evt.clientX - rect.left - root.scrollLeft;
+		var mouseY = evt.clientY - root.scrollTop;
+		if (mouseX>=365 && mouseX<=500 && mouseY>=300 && mouseY<=333){			
+			//canvasContext.fillRect(365,300,165,33);
+			canvasContext.fillStyle = 'Blue';
+			canvasContext.font = '30px Arial';		
+			canvasContext.fillText('Start Game', 370, 327);
+			showMenu = false;
+		}
+	} else 
 	if(showWinScreen){
 		defaultOptions();
 		showWinScreen=false;
+		showMenu = true;
 	}
 }
-
 function mouseMovePlayer (evt) {
 	//mouse position
 	var rect = canvas.getBoundingClientRect();
@@ -65,8 +90,13 @@ function mouseMovePlayer (evt) {
 
 function drawAll () {
 	drawRect(0, 0, canvasW, canvasH, 'skyBlue');
+	if (showMenu) {
+		menu();
+		return;
+	}
+
 	if (showWinScreen){
-		if (playerHealth === 0 ){
+		if (playerHealth === 0){
 			canvasContext.fillStyle = 'red';
 			canvasContext.font = '30px Arial';	
 			canvasContext.fillText('You lose!', 300, 100);
@@ -86,8 +116,7 @@ function drawAll () {
 	moveBall();
 	drawBar();
 	drawScore();
-	Arbiter();
-	
+	Arbiter();	
 }
 
 function drawRect (posX, posY, W, H, color) {
@@ -101,8 +130,8 @@ function drawBall() {
 	canvasContext.beginPath();
 	canvasContext.arc(ballX, ballY, BALL_RADIUS, 0, 2 * Math.PI, true);
 	canvasContext.fill();
-
 }
+
 function moveBall () {	
 	ballX += ballSpeedX;
 	ballY += ballSpeedY;
@@ -127,7 +156,6 @@ function moveBall () {
 		var deltaX = ballX - (playerX + PLAYER_W/2);
 		ballSpeedX = deltaX * 0.35;
 	}
-
 }
 
 //------------------------------ PLAYER --------------------
@@ -138,7 +166,6 @@ function drawPlayer() {
 function movePlayer(posX) {
 	playerX = posX;	
 }
-
 
 //------------------------------ BAR --------------------
 
@@ -157,16 +184,16 @@ function Bar(barX, barY){
 		drawRect(this.barX, this.barY , this.W, this.H, acolor[rcolor]);
 	};
 	this.move=function () {
-		this.barY += this.speed * 0.1;
-		if (this.barY>canvasH){
-			this.barY = 0;
+		this.barY += this.speed * 0.5;
+		if (this.barY > canvasH){
+			playerHealth=0;	//showWinScreen = true;		
 		}
 	};
 	this.reflection = function () {
 		if(ballY < this.barY+this.H && ballY > this.barY && ballX < this.barX+this.W && ballX > this.barX){
 			ballSpeedY = -ballSpeedY;
 			this.isDraw = false;
-			if (!this.isDraw) {playerScore++;}//------
+			if (!this.isDraw) {playerScore++;}
 		}		
 	};	
 };
@@ -231,6 +258,5 @@ function defaultOptions() {
 	playerScore = 0;
 	countBar = COUNT_BAR_DEFAULT;
 	barSpeed = 1;
-	createBar(countBar);
-	
+	createBar(countBar);	
 }
